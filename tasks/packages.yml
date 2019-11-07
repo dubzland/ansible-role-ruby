@@ -1,0 +1,14 @@
+---
+- name: ensure packages incompatible with Ruby are not present
+  package:
+    name: "{{ dubzland_ruby_conflicting_packages }}"
+    state: absent
+  tags:
+    - ruby
+
+- name: ensure Ruby dependencies are installed
+  package:
+    name: "{{ dubzland_ruby_prerequisites }}"
+    state: present
+  tags:
+    - ruby

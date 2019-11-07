@@ -1,0 +1,86 @@
+---
+- name: dump required version
+  debug:
+    var: dubzland_ruby_version
+
+- name: dump Ruby source url
+  debug:
+    var: dubzland_ruby_source_url
+
+- name: flag Ruby as needing install
+  set_fact:
+    _dubzland_ruby_need_install: True
+
+- name: determine if Ruby is installed
+  stat:
+    path: /usr/local/bin/ruby
+  register: _dubzland_ruby_binary
+
+- when: _dubzland_ruby_binary.stat.exists
+  block:
+    - name: determine the version of Ruby installed
+      shell: |
+        /usr/local/bin/ruby --version | sed 's/^ruby\ \([0-9\.]*\).*/\1/g'
+      register: _dubzland_ruby_installed_version
+      changed_when: False
+
+    - name: dump installed Ruby version
+      debug:
+        var: _dubzland_ruby_installed_version.stdout
+
+    - name: determine if installed Ruby is valid
+      set_fact:
+        _dubzland_ruby_need_install: "{{ _dubzland_ruby_installed_version.stdout != dubzland_ruby_version }}"
+
+    - name: dump ruby valid
+      debug:
+        var: _dubzland_ruby_need_install
+
+    - name: uninstall the existing Ruby version
+      command: make uninstall
+      args:
+        chdir: "{{ dubzland_ruby_source_root }}/ruby-{{ _dubzland_ruby_installed_version.stdout }}"
+      when: _dubzland_ruby_need_install
+
+- when: _dubzland_ruby_need_install
+  block:
+    - name: set the build directory for Ruby
+      set_fact:
+        _dubzland_ruby_build_dir: "{{ dubzland_ruby_source_root }}/ruby-{{ dubzland_ruby_version }}"
+
+    - name: download Ruby source
+      get_url:
+        url: "{{ dubzland_ruby_source_url }}"
+        dest: "{{ dubzland_ruby_source_root }}/ruby-{{ dubzland_ruby_version }}.tar.gz"
+        checksum: "sha256:{{ dubzland_ruby_source_sha256sum }}"
+
+    - name: unpack Ruby source
+      unarchive:
+        src: "{{ dubzland_ruby_source_root }}/ruby-{{ dubzland_ruby_version }}.tar.gz"
+        dest: "{{ dubzland_ruby_source_root }}"
+        remote_src: True
+
+    - name: configure Ruby source
+      command: ./configure --disable-install-rdoc
+      args:
+        chdir: "{{ _dubzland_ruby_build_dir }}"
+        creates: "{{ _dubzland_ruby_build_dir }}/Makefile"
+
+    - name: build Ruby
+      command: make
+      args:
+        chdir: "{{ _dubzland_ruby_build_dir }}"
+        creates: "{{ _dubzland_ruby_build_dir }}/ruby"
+
+    - name: install Ruby
+      command: make install
+      args:
+        chdir: "{{ _dubzland_ruby_build_dir }}"
+        creates: "/usr/local/bin/ruby"
+
+- name: ensure bundler is installed
+  gem:
+    name: bundler
+    state: present
+    version: "{{ dubzland_ruby_bundler_version }}"
+    user_install: False
