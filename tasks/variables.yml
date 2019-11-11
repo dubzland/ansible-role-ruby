@@ -8,4 +8,4 @@
         - "{{ ansible_distribution }}.yml"
         - "default.yml"
       paths:
-        - vars
+        - "{{ role_path }}/vars"
