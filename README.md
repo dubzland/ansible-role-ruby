@@ -1,5 +1,5 @@
 # Dubzland: Ruby
-[![Gitlab pipeline status (self-hosted)](https://img.shields.io/gitlab/pipeline/jdubz/dubzland-ruby?gitlab_url=https%3A%2F%2Fgit.dubzland.net)](https://git.dubzland.net/jdubz/dubzland-ruby/pipelines)
+[![Gitlab pipeline status (self-hosted)](https://git.dubzland.net/dubzland/ansible-role-ruby/badges/master/pipeline.svg)](https://git.dubzland.net/dubzland/ansible-role-ruby)
 
 Installs and configures Ruby from source.
 
@@ -61,7 +61,7 @@ None.
 ```yaml
 - hosts: servers
   roles:
-    - role: dubzland-ruby
+    - role: dubzland.ruby
 ```
 
 ## License
