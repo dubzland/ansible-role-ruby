@@ -4,6 +4,7 @@ dubzland_ruby_conflicting_packages:
   - gem
   - ruby
   - ruby1.8
+  - libssl-dev
 
 dubzland_ruby_prerequisites:
   - autoconf
@@ -13,7 +14,7 @@ dubzland_ruby_prerequisites:
   - libgdbm5
   - libncurses5-dev
   - libreadline6-dev
-  - libssl-dev
   - libyaml-dev
   - libffi-dev
   - zlib1g-dev
+  - libssl1.0-dev
