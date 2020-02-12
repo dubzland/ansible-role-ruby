@@ -10,7 +10,7 @@ dubzland_ruby_prerequisites:
   - bison
   - build-essential
   - libgdbm-dev
-  - libgdbm6
+  - libgdbm5
   - libncurses5-dev
   - libreadline6-dev
   - libssl-dev
